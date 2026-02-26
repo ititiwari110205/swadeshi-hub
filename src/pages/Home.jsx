@@ -16,13 +16,15 @@ export default function Home() {
     return (
         <div className="home-page">
             {/* Hero Slider */}
-            <section className="hero-slider" style={{ position: 'relative' }}>
+            <section className="hero-slider" style={{ position: 'relative', overflow: 'hidden' }}>
                 <Swiper
                     modules={[Autoplay, Navigation, Pagination, EffectFade]}
                     effect="fade"
+                    fadeEffect={{ crossFade: true }}
                     navigation
                     pagination={{ clickable: true }}
                     autoplay={{ delay: 6000, disableOnInteraction: false }}
+                    speed={1500}
                     className="main-hero-swiper"
                 >
                     {slides.map(slide => (
@@ -31,13 +33,15 @@ export default function Home() {
                                 <div className="slide-bg" style={{ ...styles.slideBg, backgroundImage: `url(${slide.image})` }} />
                                 <div className="slide-overlay" style={styles.slideOverlay} />
                                 <div className="container slide-content-container">
-                                    <div style={styles.slideContent} className="fade-in">
-                                        <span style={styles.slideKicker}>New Collection</span>
+                                    <div style={styles.slideContent} className="hero-content-reveal">
+                                        <span style={styles.slideKicker}>Premium Heritage</span>
                                         <h1 className="hero-title" style={styles.slideTitle}>{slide.title}</h1>
                                         <p className="hero-subtitle" style={styles.slideSubtitle}>{slide.subtitle}</p>
-                                        <Link to="/categories" className="btn btn-secondary hero-btn">
-                                            Explore Collection
-                                        </Link>
+                                        <div className="hero-actions" style={{ marginTop: '40px' }}>
+                                            <Link to="/categories" className="btn btn-secondary hero-btn">
+                                                Explore Collection
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -172,11 +176,37 @@ export default function Home() {
             </section>
 
             <style>{`
-                .main-hero-swiper { height: 85vh; min-height: 500px; }
-                .hero-title { font-size: clamp(2.5rem, 8vw, 5rem); line-height: 1.1; margin-bottom: 20px; }
-                .hero-subtitle { font-size: clamp(1rem, 3vw, 1.2rem); max-width: 500px; margin-bottom: 30px; }
-                .hero-btn { width: auto !important; margin-top: 10px; }
+                .main-hero-swiper { height: 90vh; min-height: 600px; }
+                .hero-title { font-size: clamp(2.8rem, 8vw, 5.5rem); line-height: 1; margin-bottom: 24px; }
+                .hero-subtitle { font-size: clamp(1.1rem, 3vw, 1.4rem); max-width: 600px; margin-bottom: 30px; }
+                .hero-btn { width: auto !important; padding: 16px 48px !important; }
                 
+                /* Text reveal animation on slide active */
+                .swiper-slide-active .hero-title {
+                    animation: textReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                .swiper-slide-active .hero-subtitle {
+                    animation: textReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+                    opacity: 0;
+                }
+                .swiper-slide-active .hero-btn {
+                    animation: textReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+                    opacity: 0;
+                }
+                .swiper-slide-active .slide-bg {
+                    animation: zoomBg 10s ease-out infinite alternate;
+                }
+
+                @keyframes textReveal {
+                    from { opacity: 0; transform: translateY(40px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                @keyframes zoomBg {
+                    from { transform: scale(1); }
+                    to { transform: scale(1.1); }
+                }
+
                 .category-card { height: 450px; }
                 .cat-card-2, .cat-card-4 { height: 400px; margin-top: 50px; }
                 
@@ -203,36 +233,38 @@ export default function Home() {
                 .newsletter-btn { border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important; height: 56px; }
                 
                 @media (max-width: 992px) {
-                    .main-hero-swiper { height: 70vh; }
+                    .main-hero-swiper { height: 75vh; }
                     .category-grid { grid-template-columns: repeat(2, 1fr); }
                     .cat-card-2, .cat-card-4 { margin-top: 0; }
-                    .highlight-title { font-size: 2.2rem !important; }
+                    .highlight-title { font-size: 2.5rem !important; }
                 }
                 
                 @media (max-width: 768px) {
-                    .main-hero-swiper { height: 60vh; min-height: 400px; }
+                    .main-hero-swiper { height: 70vh; min-height: 450px; }
                     .hero-title { text-align: center; }
-                    .hero-subtitle { text-align: center; font-size: 0.95rem; }
+                    .hero-subtitle { text-align: center; font-size: 1rem; margin: 0 auto 30px; }
                     .hero-btn { width: 100% !important; }
-                    .slide-content-container { display: flex; justify-content: center; }
+                    .slide-content-container { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                    .slide-content { text-align: center; }
                     
-                    .section-title { font-size: 2rem !important; }
-                    .trust-item { padding: 20px; border-bottom: 1px solid var(--color-border); }
+                    .section-title { font-size: 2.2rem !important; }
+                    .trust-item { padding: 30px 20px; border-bottom: 1px solid var(--color-border); }
                     .trust-item:last-child { border-bottom: none; }
                     
                     .newsletter-form { height: auto; flex-direction: column; gap: 10px; }
                     .newsletter-input { border-radius: var(--radius-sm) !important; border-right: 1px solid var(--color-border) !important; height: 50px; }
                     .newsletter-btn { border-radius: var(--radius-sm) !important; height: 50px; width: 100% !important; }
                     
-                    .highlight-section { padding: 60px 0; }
-                    .highlight-title { font-size: 1.8rem !important; text-align: center; }
-                    .highlight-text { text-align: center; font-size: 0.95rem !important; }
+                    .highlight-section { padding: 80px 0; }
+                    .highlight-title { font-size: 2rem !important; text-align: center; }
+                    .highlight-text { text-align: center; font-size: 1rem !important; }
                     .highlight-content { display: flex; flex-direction: column; align-items: center; }
                 }
 
                 @media (max-width: 480px) {
                     .category-grid { grid-template-columns: 1fr; }
-                    .category-card { height: 300px; }
+                    .category-card { height: 320px; }
+                    .hero-title { font-size: 2.5rem; }
                 }
             `}</style>
         </div>
@@ -241,42 +273,43 @@ export default function Home() {
 
 const styles = {
     slide: { position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center' },
-    slideBg: { position: 'absolute', inset: 0, backgroundSize: 'cover', backgroundPosition: 'center 20%', backgroundRepeat: 'no-repeat' },
-    slideOverlay: { position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(20, 5, 5, 0.7) 0%, rgba(20, 5, 5, 0.2) 100%)' },
-    slideContent: { position: 'relative', zIndex: 10, color: 'white', maxWidth: '700px' },
-    slideKicker: { display: 'inline-block', color: 'var(--color-secondary)', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.8rem', marginBottom: '10px', fontWeight: '600' },
-    slideSubtitle: { fontWeight: '300', color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 },
+    slideBg: { position: 'absolute', inset: 0, backgroundSize: 'cover', backgroundPosition: 'center 20%', backgroundRepeat: 'no-repeat', transition: 'transform 10s ease-out' },
+    slideOverlay: { position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.1) 100%)' },
+    slideContent: { position: 'relative', zIndex: 10, color: 'white', maxWidth: '800px' },
+    slideKicker: { display: 'inline-block', color: 'var(--color-secondary)', textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.9rem', marginBottom: '16px', fontWeight: '600', textShadow: '0 2px 4px rgba(0,0,0,0.3)' },
+    slideTitle: { fontWeight: '600', textShadow: '0 4px 12px rgba(0,0,0,0.5)', letterSpacing: '-0.02em' },
+    slideSubtitle: { fontWeight: '400', color: 'rgba(255,255,255,0.95)', lineHeight: 1.6, textShadow: '0 2px 8px rgba(0,0,0,0.4)' },
     trustBar: { backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' },
     trustItem: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' },
-    trustTitle: { fontSize: '1.1rem', margin: 0, color: 'var(--color-text)' },
+    trustTitle: { fontSize: '1.1rem', margin: 0, color: 'var(--color-text)', fontWeight: '600' },
     trustDesc: { fontSize: '0.85rem', color: 'var(--color-text-muted)', margin: 0 },
-    sectionHeader: { textAlign: 'center', marginBottom: '50px' },
-    sectionTitle: { fontSize: '2.8rem', fontWeight: '500', marginBottom: '15px' },
-    divider: { height: '2px', width: '60px', backgroundColor: 'var(--color-secondary)', margin: '0 auto' },
-    sectionDesc: { color: 'var(--color-text-muted)', marginTop: '15px', maxWidth: '600px', margin: '15px auto 0' },
+    sectionHeader: { textAlign: 'center', marginBottom: '60px' },
+    sectionTitle: { fontSize: '3rem', fontWeight: '500', marginBottom: '20px' },
+    divider: { height: '3px', width: '80px', backgroundColor: 'var(--color-secondary)', margin: '0 auto' },
+    sectionDesc: { color: 'var(--color-text-muted)', marginTop: '20px', maxWidth: '700px', margin: '20px auto 0', fontSize: '1.1rem' },
     categoryCard: { position: 'relative', borderRadius: 'var(--radius-md)', overflow: 'hidden', display: 'flex', alignItems: 'flex-end', backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: 'var(--color-primary-dark)' },
-    catOverlay: { position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)', transition: 'background 0.4s ease' },
-    catContent: { position: 'relative', zIndex: 10, padding: '30px', width: '100%' },
+    catOverlay: { position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)', transition: 'background 0.5s ease' },
+    catContent: { position: 'relative', zIndex: 10, padding: '30px', width: '100%', transition: 'transform 0.5s ease' },
     catTitle: { color: 'white', fontSize: '1.8rem', margin: 0, marginBottom: '8px', fontWeight: '500' },
     catLink: { color: 'var(--color-secondary)', fontSize: '0.85rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px', textTransform: 'uppercase', letterSpacing: '1px' },
-    productCard: { background: 'white', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--color-border)' },
+    productCard: { background: 'white', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--color-border)', transition: 'all 0.4s ease' },
     productImgContainer: { position: 'relative', display: 'block', paddingTop: '133%', overflow: 'hidden' },
-    productImg: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)' },
+    productImg: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)' },
     badge: { position: 'absolute', top: '12px', left: '12px', zIndex: 10 },
     productInfo: { padding: '24px' },
     productMeta: { marginBottom: '8px' },
     productCat: { color: 'var(--color-text-light)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' },
-    productName: { fontSize: '1.1rem', fontFamily: 'Outfit, sans-serif', fontWeight: '500', color: 'var(--color-text)', marginBottom: '15px', lineHeight: 1.4, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
-    productFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    productPrice: { fontSize: '1.15rem', fontWeight: '600', color: 'var(--color-primary-dark)' },
+    productName: { fontSize: '1.15rem', fontWeight: '500', color: 'var(--color-text)', marginBottom: '15px', lineHeight: 1.4, height: '48px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
+    productFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' },
+    productPrice: { fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-primary-dark)' },
     highlightSection: { backgroundColor: 'var(--color-primary-dark)', color: 'white' },
-    highlightTitle: { fontSize: '3rem', marginBottom: '25px', color: 'var(--color-surface)', lineHeight: 1.1 },
-    highlightText: { fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', marginBottom: '30px', lineHeight: 1.8 },
-    experienceBadge: { position: 'absolute', bottom: '-25px', left: '-25px', backgroundColor: 'var(--color-secondary)', padding: '20px', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-premium)', display: 'flex', alignItems: 'center', gap: '15px', zIndex: 10 },
-    newsletterSection: { backgroundColor: 'var(--color-bg)' },
-    newsletterTitle: { fontSize: '2.5rem', marginBottom: '15px' },
-    newsletterDesc: { color: 'var(--color-text-muted)', marginBottom: '30px', fontSize: '1.1rem' },
-    newsletterForm: { boxShadow: 'var(--shadow-md)', borderRadius: 'var(--radius-sm)', backgroundColor: 'white' },
-    newsletterInput: { flex: 1, padding: '0 24px', border: '1px solid var(--color-border)', borderRight: 'none', borderRadius: 'var(--radius-sm) 0 0 var(--radius-sm)', fontSize: '1rem', outline: 'none', fontFamily: 'inherit' }
+    highlightTitle: { fontSize: '3.5rem', marginBottom: '25px', color: 'var(--color-surface)', lineHeight: 1.1 },
+    highlightText: { fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', marginBottom: '35px', lineHeight: 1.8 },
+    experienceBadge: { position: 'absolute', bottom: '-25px', left: '-25px', backgroundColor: 'var(--color-secondary)', padding: '24px', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-premium)', display: 'flex', alignItems: 'center', gap: '15px', zIndex: 10 },
+    newsletterSection: { backgroundColor: 'var(--color-bg)', borderTop: '1px solid var(--color-border)' },
+    newsletterTitle: { fontSize: '2.8rem', marginBottom: '15px' },
+    newsletterDesc: { color: 'var(--color-text-muted)', marginBottom: '35px', fontSize: '1.15rem' },
+    newsletterForm: { boxShadow: 'var(--shadow-lg)', borderRadius: 'var(--radius-md)', backgroundColor: 'white', border: '1px solid var(--color-border)' },
+    newsletterInput: { flex: 1, padding: '0 24px', border: 'none', borderRadius: 'var(--radius-md) 0 0 var(--radius-md)', fontSize: '1rem', outline: 'none', fontFamily: 'inherit' }
 };
 
