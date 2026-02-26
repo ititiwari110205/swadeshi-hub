@@ -20,12 +20,22 @@ export default function Navbar() {
 
     useEffect(() => {
         setIsOpen(false);
+        if (isOpen) {
+            document.body.style.overflow = 'auto';
+        }
     }, [location]);
+
+    const toggleSidebar = () => {
+        const nextState = !isOpen;
+        setIsOpen(nextState);
+        document.body.style.overflow = nextState ? 'hidden' : 'auto';
+    };
 
     const handleLogout = () => {
         logout();
         navigate('/login');
         setIsOpen(false);
+        document.body.style.overflow = 'auto';
     };
 
     const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -33,10 +43,10 @@ export default function Navbar() {
     return (
         <>
             {/* Announcement Bar */}
-            <div style={styles.announcementBar}>
-                <div className="container" style={styles.announcementContent}>
-                    <span>✧ Complimentary Shipping on Domestic Orders Above ₹10,000 ✧</span>
-                    <div style={styles.announcementLinks} className="desktop-only">
+            <div className="announcement-bar" style={styles.announcementBar}>
+                <div className="container announcement-content" style={styles.announcementContent}>
+                    <span className="announcement-text">✧ Complimentary Shipping on Domestic Orders Above ₹10,000 ✧</span>
+                    <div className="announcement-links desktop-only" style={styles.announcementLinks}>
                         <Link to="/contact">Book an Appointment</Link>
                         <span>|</span>
                         <Link to="/about">Our Heritage</Link>
@@ -53,45 +63,45 @@ export default function Navbar() {
             <nav style={{ ...styles.navbar, ...(scrolled ? styles.navbarScrolled : {}) }}>
                 <div className="container" style={styles.navContainer}>
                     {/* Left: Mobile Menu & Desktop Links */}
-                    <div style={styles.leftSection}>
-                        <button className="mobile-menu-btn" style={styles.mobileBtn} onClick={() => setIsOpen(true)}>
+                    <div className="nav-left" style={styles.leftSection}>
+                        <button className="mobile-only" style={styles.mobileBtn} onClick={toggleSidebar} aria-label="Open Menu">
                             <Menu size={24} color="var(--color-primary-dark)" />
                         </button>
-                        <div style={styles.desktopLinks} className="desktop-only">
-                            <Link to="/" style={styles.navLink}>Home</Link>
-                            <Link to="/categories" style={styles.navLink}>Collections</Link>
-                            <Link to="/about" style={styles.navLink}>Bespoke</Link>
+                        <div className="desktop-only" style={styles.desktopLinks}>
+                            <Link to="/" className="nav-link-underline" style={styles.navLink}>Home</Link>
+                            <Link to="/categories" className="nav-link-underline" style={styles.navLink}>Collections</Link>
+                            <Link to="/about" className="nav-link-underline" style={styles.navLink}>Bespoke</Link>
                         </div>
                     </div>
 
                     {/* Center: Logo */}
-                    <div style={styles.centerSection}>
+                    <div className="nav-center" style={styles.centerSection}>
                         <Link to="/" style={styles.logo}>
                             Swadeshi<span style={{ color: 'var(--color-secondary)' }}>Hub</span>
                         </Link>
                     </div>
 
                     {/* Right: Icons */}
-                    <div style={styles.iconContainer}>
-                        <button style={styles.iconBtn} className="desktop-only">
+                    <div className="nav-right" style={styles.iconContainer}>
+                        <button style={styles.iconBtn} className="desktop-only icon-hover">
                             <Search size={20} />
                         </button>
-                        <button style={styles.iconBtn} className="desktop-only">
+                        <button style={styles.iconBtn} className="desktop-only icon-hover">
                             <Heart size={20} />
                         </button>
                         {user ? (
                             <div style={styles.userMenu}>
-                                <Link to="/profile" style={styles.iconBtn}>
+                                <Link to="/profile" style={styles.iconBtn} className="icon-hover">
                                     <User size={20} />
                                 </Link>
-                                <button onClick={handleLogout} className="btn-link desktop-only" style={{ marginLeft: '10px', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Logout</button>
+                                <button onClick={handleLogout} className="desktop-only" style={styles.logoutBtn}>Logout</button>
                             </div>
                         ) : (
-                            <Link to="/login" style={styles.iconBtn} className="desktop-only">
+                            <Link to="/login" style={styles.iconBtn} className="desktop-only icon-hover">
                                 <User size={20} />
                             </Link>
                         )}
-                        <Link to="/cart" style={styles.iconBtn}>
+                        <Link to="/cart" style={styles.iconBtn} className="icon-hover">
                             <ShoppingCart size={20} />
                             {cartItemsCount > 0 && <span style={styles.cartBadge}>{cartItemsCount}</span>}
                         </Link>
@@ -101,11 +111,11 @@ export default function Navbar() {
 
             {/* Mobile Sidebar Overlay */}
             {isOpen && (
-                <div style={styles.overlay} onClick={() => setIsOpen(false)}>
-                    <div style={styles.sidebar} onClick={(e) => e.stopPropagation()}>
+                <div className="overlay fade-in" style={styles.overlay} onClick={toggleSidebar}>
+                    <div className="sidebar sidebar-animated" style={styles.sidebar} onClick={(e) => e.stopPropagation()}>
                         <div style={styles.sidebarHeader}>
-                            <h2 style={{ fontFamily: 'Playfair Display', color: 'var(--color-primary-dark)', margin: 0 }}>Swadeshi Hub</h2>
-                            <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} color="var(--color-text)" /></button>
+                            <h2 style={{ fontFamily: 'Playfair Display', color: 'var(--color-primary-dark)', margin: 0, fontSize: '1.5rem' }}>Swadeshi Hub</h2>
+                            <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} color="var(--color-text)" /></button>
                         </div>
                         <div style={styles.sidebarLinks}>
                             <Link to="/" style={styles.sidebarLink}>Home <ChevronRight size={16} /></Link>
@@ -134,7 +144,7 @@ const styles = {
         backgroundColor: 'var(--color-primary-dark)',
         color: 'var(--color-secondary-light)',
         padding: '8px 0',
-        fontSize: '0.8rem',
+        fontSize: '0.75rem',
         letterSpacing: '1px',
         textTransform: 'uppercase',
     },
@@ -151,7 +161,7 @@ const styles = {
         display: 'flex',
         gap: '15px',
         color: 'var(--color-bg)',
-        fontSize: '0.75rem',
+        fontSize: '0.7rem',
     },
     navbar: {
         position: 'sticky',
@@ -164,13 +174,14 @@ const styles = {
     },
     navbarScrolled: {
         boxShadow: 'var(--shadow-sm)',
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
         borderBottom: '1px solid var(--color-border)',
     },
     navContainer: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '80px',
+        height: '70px',
     },
     leftSection: {
         flex: 1,
@@ -184,7 +195,7 @@ const styles = {
     },
     logo: {
         fontFamily: 'Playfair Display',
-        fontSize: '2rem',
+        fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
         fontWeight: '700',
         color: 'var(--color-primary-dark)',
         letterSpacing: '1px',
@@ -192,14 +203,14 @@ const styles = {
     },
     desktopLinks: {
         display: 'flex',
-        gap: '30px',
+        gap: '24px',
     },
     navLink: {
         fontWeight: '500',
-        fontSize: '0.85rem',
+        fontSize: '0.8rem',
         color: 'var(--color-text)',
         textTransform: 'uppercase',
-        letterSpacing: '1px',
+        letterSpacing: '1.2px',
         position: 'relative',
         padding: '5px 0',
     },
@@ -208,7 +219,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        gap: '20px'
+        gap: 'clamp(10px, 3vw, 20px)'
     },
     iconBtn: {
         position: 'relative',
@@ -219,20 +230,21 @@ const styles = {
         border: 'none',
         cursor: 'pointer',
         transition: 'color 0.2s ease',
+        padding: '5px'
     },
     cartBadge: {
         position: 'absolute',
-        top: '-6px',
-        right: '-8px',
+        top: '-4px',
+        right: '-4px',
         backgroundColor: 'var(--color-secondary)',
         color: '#fff',
         borderRadius: '50%',
-        width: '18px',
-        height: '18px',
+        width: '16px',
+        height: '16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '0.7rem',
+        fontSize: '0.65rem',
         fontWeight: 'bold'
     },
     userMenu: {
@@ -240,10 +252,20 @@ const styles = {
         alignItems: 'center'
     },
     mobileBtn: {
-        display: 'none',
         background: 'none',
         border: 'none',
         cursor: 'pointer',
+        padding: '5px',
+        marginRight: '10px'
+    },
+    logoutBtn: {
+        marginLeft: '10px',
+        fontSize: '0.75rem',
+        color: 'var(--color-text-muted)',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        textDecoration: 'underline'
     },
     overlay: {
         position: 'fixed',
@@ -251,20 +273,19 @@ const styles = {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'rgba(0,0,0,0.4)',
         zIndex: 100,
-        backdropFilter: 'blur(4px)'
+        backdropFilter: 'blur(3px)'
     },
     sidebar: {
         position: 'absolute',
         top: 0,
         left: 0,
         bottom: 0,
-        width: '300px',
+        width: 'min(300px, 85vw)',
         backgroundColor: 'var(--color-surface)',
         boxShadow: 'var(--shadow-lg)',
-        padding: '30px 24px',
-        animation: 'slideIn 0.3s ease-out forwards',
+        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
     },
@@ -272,21 +293,21 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '40px',
+        marginBottom: '30px',
         borderBottom: '1px solid var(--color-border)',
-        paddingBottom: '20px',
+        paddingBottom: '15px',
     },
     sidebarLinks: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '5px'
     },
     sidebarLink: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '15px 0',
-        fontSize: '1rem',
+        padding: '12px 0',
+        fontSize: '0.9rem',
         fontWeight: '500',
         borderBottom: '1px solid var(--color-border)',
         color: 'var(--color-text)',
@@ -294,25 +315,4 @@ const styles = {
         letterSpacing: '1px'
     }
 };
-
-// Add to style tags dynamically for media query
-if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.innerHTML = `
-    @media (max-width: 992px) {
-      .desktop-only { display: none !important; }
-      .mobile-menu-btn { display: block !important; }
-      .announcementLinks { display: none !important; }
-    }
-    @keyframes slideIn {
-      from { transform: translateX(-100%); }
-      to { transform: translateX(0); }
-    }
-    .desktop-only a:hover, .iconBtn:hover { color: var(--color-secondary) !important; }
-    .btn-link { background: none; border: none; cursor: pointer; text-decoration: underline; }
-    .navLink::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--color-secondary); transition: width 0.3s ease; }
-    .navLink:hover::after { width: 100%; }
-  `;
-    document.head.appendChild(style);
-}
 
